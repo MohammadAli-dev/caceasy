@@ -111,6 +111,12 @@ export default function Dashboard() {
                         <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
                         <div className="space-y-2">
                             <button
+                                onClick={() => router.push('/analytics')}
+                                className="w-full text-left p-3 bg-blue-50 hover:bg-blue-100 rounded font-semibold text-blue-700"
+                            >
+                                📊 View Analytics Dashboard
+                            </button>
+                            <button
                                 onClick={() => router.push('/flagged')}
                                 className="w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded"
                             >

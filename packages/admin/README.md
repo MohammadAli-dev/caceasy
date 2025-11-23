@@ -24,6 +24,7 @@ Production-ready Admin Dashboard for CACeasy with secure API-key authentication,
 ### Frontend Pages
 - **Login**: API key authentication with validation
 - **Dashboard**: KPI tiles, top regions, quick actions
+- **Analytics**: Comprehensive analytics dashboard with charts and time-series data (Module 5)
 - **Flagged Events**: Table view with resolve modal
 - **Payouts**: Bulk approve, CSV export
 - **Batches**: Create batch, view counts
@@ -103,6 +104,18 @@ admin:
 2. Click "Create Batch"
 3. Fill in batch details (name, SKU, points per scan, quantity)
 4. After creation, you can generate coupons via the coupons endpoint
+
+### Viewing Analytics Dashboard (Module 5)
+1. Navigate to Analytics page from the main dashboard or directly at `/analytics`
+2. View KPI tiles: Scans/day, Active Masons, Redemption Rate, Pending Payouts
+3. Select time range: 7, 14, 30, 60, or 90 days
+4. Explore charts:
+   - **Scans Over Time**: Area chart showing daily scan trends
+   - **Active Masons Over Time**: Line chart tracking unique users
+   - **Redemption Rate Trend**: Line chart showing success rate over time
+   - **Top Regions**: Bar chart of regions by scan count
+5. Review Daily Summary table for detailed day-by-day breakdown
+6. All data is pulled from pre-computed `analytics_daily` table for fast performance
 
 ## Testing
 
