@@ -17,12 +17,11 @@ jest.mock('next/router', () => ({
 // Mock the api module
 jest.mock('../lib/api');
 
-// Mock recharts to avoid rendering issues in tests
 jest.mock('recharts', () => ({
-    ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
-    LineChart: ({ children }: any) => <div data-testid="line-chart">{children}</div>,
-    AreaChart: ({ children }: any) => <div data-testid="area-chart">{children}</div>,
-    BarChart: ({ children }: any) => <div data-testid="bar-chart">{children}</div>,
+    ResponsiveContainer: () => null,
+    LineChart: () => null,
+    AreaChart: () => null,
+    BarChart: () => null,
     Line: () => null,
     Area: () => null,
     Bar: () => null,

@@ -51,7 +51,7 @@ export const rateLimitAdmin = (req: Request, res: Response, next: NextFunction) 
     const key = req.ip || 'unknown';
     const now = Date.now();
     const windowMs = 60000; // 1 minute window
-    const maxRequests = 20; // max 20 requests per minute
+    const maxRequests = config.nodeEnv === 'test' ? 1000 : config.adminRateLimit; // max requests per minute (1000 for tests to avoid blocking other tests)
 
     // Get existing requests for this IP
     const requests = (adminRateLimitStore.get(key) || []).filter((timestamp) => now - timestamp < windowMs);
