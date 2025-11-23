@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: caceasy
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/seed:/docker-entrypoint-initdb.d
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./packages/backend
+    command: npm run start:dev
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgres://postgres:password@postgres:5432/caceasy
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./packages/backend:/app
+      - ./infra:/infra
+      - /app/node_modules
+      - ./openapi.yaml:/app/openapi.yaml
+
+  admin:
+    build:
+      context: .
+      dockerfile: packages/admin/Dockerfile
+    ports:
+      - "3001:3000"
+    environment:
+      NODE_ENV: development
+
+volumes:
+  postgres_data:

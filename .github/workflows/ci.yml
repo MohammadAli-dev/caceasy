@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: caceasy_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run Backend Lint
+      working-directory: ./packages/backend
+      run: npm run lint --if-present
+
+    - name: Run Backend Typecheck
+      working-directory: ./packages/backend
+      run: npx tsc --noEmit
+
+    - name: Run Backend Tests
+      working-directory: ./packages/backend
+      env:
+        DATABASE_URL: postgres://postgres:password@localhost:5432/caceasy_test
+        REDIS_URL: redis://localhost:6379
+        JWT_SECRET: test_secret
+      run: |
+        npm run migrate
+        npm test

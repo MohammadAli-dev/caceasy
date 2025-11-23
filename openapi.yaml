@@ -1,0 +1,582 @@
+openapi: 3.0.3
+info:
+  title: caceasy API
+  version: 0.1.0
+  description: API for coupon scanning and wallet management
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    adminApiKey:
+      type: apiKey
+      in: header
+      name: x-admin-key
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        phone:
+          type: string
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - phone
+
+    Batch:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        sku:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - sku
+
+    Coupon:
+      type: object
+      properties:
+        id:
+          type: string
+        token:
+          type: string
+        batch_id:
+          type: string
+          format: uuid
+        points:
+          type: integer
+        status:
+          type: string
+          enum: [issued, redeemed]
+        created_at:
+          type: string
+          format: date-time
+        redeemed_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - token
+        - batch_id
+        - points
+        - status
+
+    ScanEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        coupon_id:
+          type: string
+        device_id:
+          type: string
+        gps:
+          type: object
+          properties:
+            lat:
+              type: number
+            lon:
+              type: number
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: string
+      required:
+        - id
+        - user_id
+
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        amount:
+          type: integer
+        type:
+          type: string
+          enum: [redemption, payout, adjustment]
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - user_id
+        - amount
+        - type
+
+    Payout:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        amount:
+          type: integer
+        status:
+          type: string
+          enum: [pending, completed, failed]
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - user_id
+        - amount
+        - status
+
+    Wallet:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        points:
+          type: integer
+        rupeeEquivalent:
+          type: integer
+      required:
+        - user_id
+        - points
+        - rupeeEquivalent
+
+    OTPRequest:
+      type: object
+      properties:
+        phone:
+          type: string
+          pattern: '^\+?[1-9]\d{1,14}$'
+      required:
+        - phone
+
+    OTPVerify:
+      type: object
+      properties:
+        phone:
+          type: string
+        otp:
+          type: string
+          pattern: '^\d{6}$'
+      required:
+        - phone
+        - otp
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+        - token
+        - user
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+
+  /version:
+    get:
+      summary: Get API version
+      responses:
+        '200':
+          description: Version information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                  env:
+                    type: string
+
+  /auth/otp:
+    post:
+      summary: Request OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OTPRequest'
+      responses:
+        '202':
+          description: OTP sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '429':
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/verify:
+    post:
+      summary: Verify OTP and get JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OTPVerify'
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid OTP
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /batches:
+    post:
+      summary: Create a new batch
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                sku:
+                  type: string
+              required:
+                - name
+                - sku
+      responses:
+        '201':
+          description: Batch created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /coupons/generate:
+    post:
+      summary: Generate coupons for a batch
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                batch_id:
+                  type: string
+                  format: uuid
+                quantity:
+                  type: integer
+                  minimum: 1
+                  maximum: 10000
+                points:
+                  type: integer
+                  minimum: 1
+                prefix:
+                  type: string
+              required:
+                - batch_id
+                - quantity
+                - points
+      responses:
+        '201':
+          description: Coupons generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  batch_id:
+                    type: string
+                  count:
+                    type: integer
+                  coupons:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        token:
+                          type: string
+                        batch_id:
+                          type: string
+                        points:
+                          type: integer
+            text/csv:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+
+  /coupons/{token}:
+    get:
+      summary: Get coupon details
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Coupon found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Coupon'
+        '404':
+          description: Coupon not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /scan:
+    post:
+      summary: Scan and redeem a coupon
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                device_id:
+                  type: string
+                gps:
+                  type: object
+                  properties:
+                    lat:
+                      type: number
+                    lon:
+                      type: number
+                client_time:
+                  type: string
+                  format: date-time
+              required:
+                - token
+      responses:
+        '200':
+          description: Coupon redeemed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  pointsCredited:
+                    type: integer
+                  newWalletPoints:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '409':
+          description: Coupon already redeemed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+
+  /users/{id}/wallet:
+    get:
+      summary: Get user wallet
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Wallet information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /users/{id}/redeem:
+    post:
+      summary: Request payout
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: integer
+                  minimum: 1
+                method:
+                  type: string
+                account:
+                  type: string
+              required:
+                - amount
+                - method
+                - account
+      responses:
+        '202':
+          description: Payout request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payout_id:
+                    type: string
+                  status:
+                    type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /admin/payouts:
+    get:
+      summary: Get payouts (admin only)
+      security:
+        - adminApiKey: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, completed, failed]
+      responses:
+        '200':
+          description: List of payouts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payouts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Payout'
+        '401':
+          description: Unauthorized
+
+  /admin/flagged:
+    get:
+      summary: Get flagged activities (admin only)
+      security:
+        - adminApiKey: []
+      responses:
+        '200':
+          description: List of flagged activities
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  flagged:
+                    type: array
+                    items:
+                      type: object
+        '401':
+          description: Unauthorized

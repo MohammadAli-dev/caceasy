@@ -1,0 +1,11 @@
+{
+  "/batches": "pages/batches.html",
+  "/": "pages/index.html",
+  "/flagged": "pages/flagged.html",
+  "/login": "pages/login.html",
+  "/_app": "pages/_app.js",
+  "/payouts": "pages/payouts.html",
+  "/_error": "pages/_error.js",
+  "/_document": "pages/_document.js",
+  "/404": "pages/404.html"
+}

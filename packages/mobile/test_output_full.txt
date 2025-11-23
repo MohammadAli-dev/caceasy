@@ -1,0 +1,130 @@
+﻿node.exe : FAIL src/_
+_tests__/OfflineQueue
+.test.ts
+At line:1 char:1
++ & "C:\Program Files
+\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (FAIL sr   
+ c/__tests__/Offl    
+ineQueue.test.ts    
+:String) [], Rem    
+oteException
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+  ÔùÅ Test suite 
+failed to run
+
+    ReferenceError: 
+expect is not defined
+
+    [0m [90m 2 
+|[39m 
+[36mimport[39m [32
+m'@testing-library/je
+st-native/extend-expe
+ct'[39m[33m;[39m
+     [90m 3 |[39m r
+equire([32m'./native
+Mocks'[39m)[33m;[3
+9m
+    [31m[1m>[22m[
+39m[90m 4 |[39m jes
+t[33m.[39mmock([32
+m'@react-native-async
+-storage/async-storag
+e'[39m[33m,[39m 
+() [33m=>[39m requi
+re([32m'@react-nativ
+e-async-storage/async
+-storage/jest/async-s
+torage-mock'[39m))[
+33m;[39m
+     [90m   |[39m 
+[31m[1m^[22m[39m
+     [90m 5 
+|[39m[0m
+
+      at 
+Object.<anonymous> (.
+./../node_modules/@te
+sting-library/jest-na
+tive/dist/extend-expe
+ct.js:13:1)
+      at 
+Object.<anonymous> (.
+./../node_modules/@te
+sting-library/jest-na
+tive/extend-expect.js
+:1:165)
+      at 
+Object.<anonymous> (j
+est/setupEnv.js:4:1)
+
+FAIL src/__tests__/Ap
+p.test.tsx
+  ÔùÅ Test suite 
+failed to run
+
+    ReferenceError: 
+expect is not defined
+
+    [0m [90m 2 
+|[39m 
+[36mimport[39m [32
+m'@testing-library/je
+st-native/extend-expe
+ct'[39m[33m;[39m
+     [90m 3 |[39m r
+equire([32m'./native
+Mocks'[39m)[33m;[3
+9m
+    [31m[1m>[22m[
+39m[90m 4 |[39m jes
+t[33m.[39mmock([32
+m'@react-native-async
+-storage/async-storag
+e'[39m[33m,[39m 
+() [33m=>[39m requi
+re([32m'@react-nativ
+e-async-storage/async
+-storage/jest/async-s
+torage-mock'[39m))[
+33m;[39m
+     [90m   |[39m 
+[31m[1m^[22m[39m
+     [90m 5 
+|[39m[0m
+
+      at 
+Object.<anonymous> (.
+./../node_modules/@te
+sting-library/jest-na
+tive/dist/extend-expe
+ct.js:13:1)
+      at 
+Object.<anonymous> (.
+./../node_modules/@te
+sting-library/jest-na
+tive/extend-expect.js
+:1:165)
+      at 
+Object.<anonymous> (j
+est/setupEnv.js:4:1)
+
+Test Suites: 2 
+failed, 2 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        2.488 s
+Ran all test suites.

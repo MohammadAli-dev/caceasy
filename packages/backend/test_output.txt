@@ -1,0 +1,58 @@
+
+> @caceasy/backend@0.1.0 test
+> jest
+
+  console.log
+    Database schema initialized successfully
+
+      at Object.<anonymous> (tests/api.test.ts:41:21)
+
+  console.log
+    [OTP] Phone: +15558359824, OTP: 292331
+
+      at src/routes/auth.ts:36:21
+
+  console.log
+    Concurrency Test: 1 successes, 9 conflicts
+
+      at Object.<anonymous> (tests/api.test.ts:264:21)
+
+PASS tests/api.test.ts (9.24 s)
+  Module 1 - OpenAPI + Auth + Wallet Tests
+    OpenAPI Specification
+      ✓ should parse openapi.yaml successfully (20 ms)
+    GET /health
+      ✓ should return 200 OK (54 ms)
+    GET /version
+      ✓ should return version info (12 ms)
+    Auth Flow
+      ✓ should request OTP (198 ms)
+      ✓ should verify OTP and return JWT (351 ms)
+      ✓ should reject invalid OTP (133 ms)
+    JWT Enforcement
+      ✓ should reject unauthenticated requests to protected endpoints (6 ms)
+      ✓ should accept authenticated requests (15 ms)
+    Coupon Generation
+      ✓ should generate coupons with auth (23 ms)
+      ✓ should return CSV when Accept: text/csv (21 ms)
+    GET /coupons/{token}
+      ✓ should get coupon details (23 ms)
+      ✓ should return 404 for non-existent token (15 ms)
+    Scan - Concurrency Test
+      ✓ should handle concurrent scans atomically (1 success, 9 conflicts) (120 ms)
+    Wallet
+      ✓ should successfully redeem a new token and update wallet (20 ms)
+      ✓ should get wallet balance (5 ms)
+      ✓ should reject access to another user's wallet (5 ms)
+      ✓ should create payout request (11 ms)
+    Admin Endpoints
+      ✓ should reject requests without admin key (7 ms)
+      ✓ should return payouts with valid admin key (4 ms)
+      ✓ should return flagged activities (4 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       20 passed, 20 total
+Snapshots:   0 total
+Time:        9.606 s
+Ran all test suites.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?
