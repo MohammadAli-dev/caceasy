@@ -168,3 +168,31 @@ ALTER TABLE payouts ALTER COLUMN user_id DROP NOT NULL;
 INSERT INTO payouts (id, dealer_id, amount, status, type, reference, created_at)
 VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 5000, 'pending', 'dealer', 'Sample Dealer Payout', NOW())
 ON CONFLICT (id) DO NOTHING;
+
+-- Module 5: Analytics Engine + BI Layer
+
+-- Analytics daily aggregation table
+CREATE TABLE IF NOT EXISTS analytics_daily (
+  date DATE PRIMARY KEY,
+  scans INTEGER NOT NULL DEFAULT 0,
+  active_masons INTEGER NOT NULL DEFAULT 0,
+  redemptions INTEGER NOT NULL DEFAULT 0,
+  redemption_rate FLOAT NOT NULL DEFAULT 0.0,
+  top_regions JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Index for date-based queries
+CREATE INDEX IF NOT EXISTS idx_analytics_daily_date ON analytics_daily(date DESC);
+
+-- Seed sample analytics data for last 7 days
+INSERT INTO analytics_daily (date, scans, active_masons, redemptions, redemption_rate, top_regions, created_at)
+VALUES 
+  (CURRENT_DATE - INTERVAL '6 days', 120, 45, 95, 0.792, '[{"region":"North","count":35},{"region":"South","count":28},{"region":"East","count":30},{"region":"West","count":27}]'::jsonb, NOW() - INTERVAL '6 days'),
+  (CURRENT_DATE - INTERVAL '5 days', 135, 52, 108, 0.800, '[{"region":"North","count":40},{"region":"South","count":32},{"region":"East","count":35},{"region":"West","count":28}]'::jsonb, NOW() - INTERVAL '5 days'),
+  (CURRENT_DATE - INTERVAL '4 days', 142, 58, 115, 0.810, '[{"region":"North","count":42},{"region":"South","count":35},{"region":"East","count":38},{"region":"West","count":27}]'::jsonb, NOW() - INTERVAL '4 days'),
+  (CURRENT_DATE - INTERVAL '3 days', 128, 50, 102, 0.797, '[{"region":"North","count":38},{"region":"South","count":30},{"region":"East","count":32},{"region":"West","count":28}]'::jsonb, NOW() - INTERVAL '3 days'),
+  (CURRENT_DATE - INTERVAL '2 days', 155, 62, 125, 0.806, '[{"region":"North","count":45},{"region":"South","count":38},{"region":"East","count":42},{"region":"West","count":30}]'::jsonb, NOW() - INTERVAL '2 days'),
+  (CURRENT_DATE - INTERVAL '1 day', 148, 60, 120, 0.811, '[{"region":"North","count":43},{"region":"South","count":36},{"region":"East","count":40},{"region":"West","count":29}]'::jsonb, NOW() - INTERVAL '1 day'),
+  (CURRENT_DATE, 165, 68, 135, 0.818, '[{"region":"North","count":48},{"region":"South","count":40},{"region":"East","count":45},{"region":"West","count":32}]'::jsonb, NOW())
+ON CONFLICT (date) DO NOTHING;

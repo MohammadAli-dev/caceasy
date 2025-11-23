@@ -8,6 +8,7 @@ import couponRoutes from './routes/coupons';
 import scanRoutes from './routes/scan';
 import userRoutes from './routes/users';
 import adminRoutes from './routes/admin';
+import adminAnalyticsRoutes from './routes/adminAnalytics';
 
 import dealerRoutes from './routes/dealer';
 
@@ -24,6 +25,7 @@ app.use('/coupons', couponRoutes);
 app.use('/scan', scanRoutes);
 app.use('/users', userRoutes);
 app.use('/admin', adminRoutes);
+app.use('/admin/analytics', adminAnalyticsRoutes);
 app.use('/dealer', dealerRoutes);
 
 if (require.main === module) {
