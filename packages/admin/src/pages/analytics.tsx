@@ -108,7 +108,7 @@ export default function AnalyticsPage() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-gray-500 text-sm">Scans/Day</p>
-                                <p className="text-3xl font-bold">{overview?.scans_per_day || 0}</p>
+                                <p data-testid="kpi-scans" className="text-3xl font-bold">{overview?.scans_per_day || 0}</p>
                                 <p className="text-xs text-gray-400 mt-1">
                                     {overview?.date || 'Latest'}
                                 </p>
@@ -121,7 +121,7 @@ export default function AnalyticsPage() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-gray-500 text-sm">Active Masons</p>
-                                <p className="text-3xl font-bold">{overview?.active_masons || 0}</p>
+                                <p data-testid="kpi-active-masons" className="text-3xl font-bold">{overview?.active_masons || 0}</p>
                                 <p className="text-xs text-gray-400 mt-1">Unique users</p>
                             </div>
                             <Users className="text-green-600" size={40} />
@@ -132,7 +132,7 @@ export default function AnalyticsPage() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-gray-500 text-sm">Redemption Rate</p>
-                                <p className="text-3xl font-bold">
+                                <p data-testid="kpi-redemption-rate" className="text-3xl font-bold">
                                     {((overview?.redemption_rate || 0) * 100).toFixed(1)}%
                                 </p>
                                 <p className="text-xs text-gray-400 mt-1">Success rate</p>
@@ -145,7 +145,7 @@ export default function AnalyticsPage() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-gray-500 text-sm">Pending Payouts</p>
-                                <p className="text-3xl font-bold">
+                                <p data-testid="kpi-pending-payouts" className="text-3xl font-bold">
                                     {overview?.pending_payouts_count || 0}
                                 </p>
                                 <p className="text-xs text-gray-400 mt-1">Awaiting approval</p>
@@ -165,8 +165,8 @@ export default function AnalyticsPage() {
                                 key={d}
                                 onClick={() => setDays(d)}
                                 className={`px-4 py-2 rounded ${days === d
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-white text-gray-700 hover:bg-gray-100'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-white text-gray-700 hover:bg-gray-100'
                                     }`}
                             >
                                 {d} days
@@ -341,3 +341,4 @@ export default function AnalyticsPage() {
         </div>
     );
 }
+

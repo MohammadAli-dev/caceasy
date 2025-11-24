@@ -10,6 +10,7 @@ const customJestConfig = {
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
         '^lucide-react$': '<rootDir>/__mocks__/lucide-react.js',
+        '^recharts$': '<rootDir>/__mocks__/recharts.js',
     },
     transformIgnorePatterns: [
         '/node_modules/(?!lucide-react|axios|recharts|d3-.*)/'
