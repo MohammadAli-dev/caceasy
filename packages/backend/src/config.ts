@@ -11,6 +11,7 @@ export const config = {
     redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
     jwtSecret: process.env.JWT_SECRET || 'dev_secret_do_not_use_in_prod',
     adminApiKey: process.env.ADMIN_API_KEY || 'dev_admin_key',
+    adminRateLimit: parseInt(process.env.ADMIN_RATE_LIMIT || '20', 10),
 };
 
 // Fail fast if JWT_SECRET is not set in production

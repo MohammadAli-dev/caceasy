@@ -10,6 +10,9 @@ const customJestConfig = {
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/$1',
     },
+    transformIgnorePatterns: [
+        '/node_modules/(?!lucide-react|axios)/'
+    ],
 }
 
 module.exports = createJestConfig(customJestConfig)
