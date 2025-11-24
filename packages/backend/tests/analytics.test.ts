@@ -22,10 +22,16 @@ describe('Analytics Module Tests', () => {
     });
 
     beforeEach(async () => {
-        // Clean up test data before each test
-        await query('DELETE FROM analytics_daily WHERE date >= CURRENT_DATE - INTERVAL \'10 days\'');
-        await query('DELETE FROM scans WHERE scanned_at >= CURRENT_DATE - INTERVAL \'10 days\'');
-        await query('DELETE FROM transactions WHERE created_at >= CURRENT_DATE - INTERVAL \'10 days\'');
+        // Clean up ONLY today's test data, preserving seed data from previous days
+        await query('DELETE FROM analytics_daily WHERE date = CURRENT_DATE');
+        await query('DELETE FROM scans WHERE DATE(scanned_at) = CURRENT_DATE');
+        await query('DELETE FROM transactions WHERE DATE(created_at) = CURRENT_DATE');
+
+        // Clean up test coupons (tokens starting with TOKEN)
+        await query("DELETE FROM coupons WHERE token LIKE 'TOKEN%'");
+
+        // Clean up test users (phone numbers used in tests)
+        await query("DELETE FROM users WHERE phone = '+15551234567'");
     });
 
     describe('computeAnalytics script', () => {
@@ -57,7 +63,8 @@ describe('Analytics Module Tests', () => {
             );
             const batchId = batchResult.rows[0].id;
 
-            const couponTokens = ['TOKEN1', 'TOKEN2', 'TOKEN3'];
+            const timestamp = Date.now();
+            const couponTokens = [`TOKEN-${timestamp}-1`, `TOKEN-${timestamp}-2`, `TOKEN-${timestamp}-3`];
             for (const token of couponTokens) {
                 await query(
                     `INSERT INTO coupons (token, batch_id, points, status) VALUES ($1, $2, $3, $4)`,
@@ -68,9 +75,9 @@ describe('Analytics Module Tests', () => {
             // Create test scans for today
             const today = new Date().toISOString().split('T')[0];
             const scanData = [
-                { token: 'TOKEN1', success: true, region: 'North' },
-                { token: 'TOKEN2', success: true, region: 'South' },
-                { token: 'TOKEN3', success: false, region: 'North' },
+                { token: couponTokens[0], success: true, region: 'North' },
+                { token: couponTokens[1], success: true, region: 'South' },
+                { token: couponTokens[2], success: false, region: 'North' },
             ];
 
             for (const scan of scanData) {
@@ -138,7 +145,13 @@ describe('Analytics Module Tests', () => {
             const today = new Date().toISOString().split('T')[0];
             await query(
                 `INSERT INTO analytics_daily (date, scans, active_masons, redemptions, redemption_rate, top_regions)
-                 VALUES ($1, $2, $3, $4, $5, $6)`,
+                 VALUES ($1, $2, $3, $4, $5, $6)
+                 ON CONFLICT (date) DO UPDATE SET
+                    scans = EXCLUDED.scans,
+                    active_masons = EXCLUDED.active_masons,
+                    redemptions = EXCLUDED.redemptions,
+                    redemption_rate = EXCLUDED.redemption_rate,
+                    top_regions = EXCLUDED.top_regions`,
                 [
                     today,
                     150,
@@ -185,7 +198,13 @@ describe('Analytics Module Tests', () => {
 
                 await query(
                     `INSERT INTO analytics_daily (date, scans, active_masons, redemptions, redemption_rate, top_regions)
-                     VALUES ($1, $2, $3, $4, $5, $6)`,
+                     VALUES ($1, $2, $3, $4, $5, $6)
+                     ON CONFLICT (date) DO UPDATE SET
+                        scans = EXCLUDED.scans,
+                        active_masons = EXCLUDED.active_masons,
+                        redemptions = EXCLUDED.redemptions,
+                        redemption_rate = EXCLUDED.redemption_rate,
+                        top_regions = EXCLUDED.top_regions`,
                     [
                         dateStr,
                         100 + i * 10,
@@ -231,7 +250,13 @@ describe('Analytics Module Tests', () => {
             const today = new Date().toISOString().split('T')[0];
             await query(
                 `INSERT INTO analytics_daily (date, scans, active_masons, redemptions, redemption_rate, top_regions)
-                 VALUES ($1, $2, $3, $4, $5, $6)`,
+                 VALUES ($1, $2, $3, $4, $5, $6)
+                 ON CONFLICT (date) DO UPDATE SET
+                    scans = EXCLUDED.scans,
+                    active_masons = EXCLUDED.active_masons,
+                    redemptions = EXCLUDED.redemptions,
+                    redemption_rate = EXCLUDED.redemption_rate,
+                    top_regions = EXCLUDED.top_regions`,
                 [
                     today,
                     150,

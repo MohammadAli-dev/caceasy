@@ -1,0 +1,139 @@
+# FIX PLAN FOR REMAINING 5 TEST FAILURES
+==========================================
+
+## ROOT CAUSE IDENTIFIED ✓
+
+**Error**: `duplicate key value violates unique constraint "coupons_pkey"`
+**Location**: tests/analytics.test.ts line 62 (coupon insertion)
+**Cause**: Tests inserting coupons with hardcoded tokens that conflict with:
+1. Seed data (TEST-COUPON-001, TEST-COUPON-002, TEST-COUPON-003)
+2. Previous test runs (TOKEN1, TOKEN2, TOKEN3)
+
+## FAILING TESTS (5 total)
+
+1. ✕ "should compute analytics for a day with scans" - Line 44
+   - Tries to INSERT coupons with tokens: TOKEN1, TOKEN2, TOKEN3
+   - Conflicts with existing data
+
+2. ✕ "should return analytics overview" - Line 136
+   - Likely inserting duplicate analytics_daily data for today
+
+3. ✕ "should return daily time-series analytics" - Line 177
+   - Inserting analytics_daily for recent dates that may exist
+
+4. ✕ "should validate days parameter" - Line 218
+   - Related to above
+
+5. ✕ "should return aggregated region analytics" - Line 229
+   - Inserting analytics_daily that conflicts
+
+## FIX STRATEGY
+
+### Option 1: Use UNIQUE Token Generation (RECOMMENDED)
+Generate unique tokens using timestamps or UUIDs to avoid conflicts.
+
+**Changes needed:**
+- Line 60: Change `['TOKEN1', 'TOKEN2', 'TOKEN3']` to generate unique tokens
+- Use `uuid` or timestamp-based tokens
+
+### Option 2: Use ON CONFLICT DO NOTHING
+Add conflict handling to INSERT statements.
+
+**Changes needed:**
+- Modify INSERT queries to use `ON CONFLICT DO NOTHING` or `ON CONFLICT DO UPDATE`
+
+### Option 3: Better Cleanup in beforeEach
+Delete test-specific data more thoroughly.
+
+**Changes needed:**
+- Add cleanup for specific test tokens/users
+- Delete coupons with tokens starting with 'TOKEN'
+
+### Option 4: Use Transactions with Rollback (BEST PRACTICE)
+Wrap each test in a transaction and rollback after.
+
+**Changes needed:**
+- Add transaction begin in beforeEach
+- Add rollback in afterEach
+
+## RECOMMENDED IMPLEMENTATION
+
+I'll use **Option 1 + Option 3 combined**:
+
+### Fix 1: Generate Unique Tokens
+```typescript
+// Line 60 - Instead of hardcoded tokens
+const timestamp = Date.now();
+const couponTokens = [
+    `TOKEN-${timestamp}-1`,
+    `TOKEN-${timestamp}-2`,
+    `TOKEN-${timestamp}-3`
+];
+```
+
+### Fix 2: Enhanced Cleanup
+```typescript
+// In beforeEach (line 24-29)
+beforeEach(async () => {
+    // Clean up test-generated data
+    await query('DELETE FROM analytics_daily WHERE date = CURRENT_DATE');
+    await query('DELETE FROM scans WHERE DATE(scanned_at) = CURRENT_DATE');
+    await query('DELETE FROM transactions WHERE DATE(created_at) = CURRENT_DATE');
+    
+    // Clean up test coupons (tokens starting with TOKEN)
+    await query("DELETE FROM coupons WHERE token LIKE 'TOKEN%'");
+    
+    // Clean up test users (phone numbers used in tests)
+    await query("DELETE FROM users WHERE phone = '+15551234567'");
+});
+```
+
+### Fix 3: Use INSERT ... ON CONFLICT for Analytics
+```typescript
+// For analytics_daily inserts, use:
+await query(`
+    INSERT INTO analytics_daily (date, scans, active_masons, redemptions, redemption_rate, top_regions)
+    VALUES ($1, $2, $3, $4, $5, $6)
+    ON CONFLICT (date) DO UPDATE SET
+        scans = EXCLUDED.scans,
+        active_masons = EXCLUDED.active_masons,
+        redemptions = EXCLUDED.redemptions,
+        redemption_rate = EXCLUDED.redemption_rate,
+        top_regions = EXCLUDED.top_regions
+`, [date, scans, active_masons, redemptions, redemption_rate, top_regions]);
+```
+
+## IMPLEMENTATION STEPS
+
+1. **Update beforeEach cleanup** (lines 24-29)
+   - Add cleanup for TOKEN% coupons
+   - Add cleanup for test phone numbers
+
+2. **Fix "compute analytics for a day with scans" test** (line 44-101)
+   - Generate unique tokens using timestamp
+   - Or use ON CONFLICT for coupon inserts
+
+3. **Fix analytics_daily INSERT tests** (lines 136+)
+   - Use ON CONFLICT DO UPDATE for analytics_daily inserts
+   - This allows tests to run multiple times
+
+4. **Test verification**
+   - Run: `npm test -- tests/analytics.test.ts --runInBand`
+   - Verify all 8 tests pass
+
+## EXPECTED OUTCOME
+
+After fixes:
+- All 8 analytics tests pass ✓
+- Total: 57 tests, 56 passing, 1 skipped
+- Pass rate: 98.2% (or 100% of executable tests)
+
+## TIME ESTIMATE
+
+- Implementation: 10 minutes
+- Testing: 5 minutes
+- Total: 15 minutes
+
+## CONFIDENCE LEVEL
+
+95% - The root cause is clear (duplicate key violations), and the fixes are straightforward.
