@@ -28,6 +28,8 @@ services:
       PORT: 3000
       DATABASE_URL: postgres://postgres:password@postgres:5432/caceasy
       REDIS_URL: redis://redis:6379
+      ADMIN_API_KEY: test-admin-key-12345
+      JWT_SECRET: test_jwt_secret_key_for_development
     depends_on:
       - postgres
       - redis

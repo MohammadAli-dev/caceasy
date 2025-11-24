@@ -1,0 +1,39 @@
+FIX REPORT 2 (AFTER)
+====================
+Date: 2025-11-24
+
+1. ADMIN PACKAGE
+   Test File: packages/admin/src/__tests__/Analytics.test.tsx
+   
+   Error Found: 
+   - Tests failed because they could not find elements with data-testid attributes (kpi-scans, etc.).
+   - The component packages/admin/src/pages/analytics.tsx was missing these attributes.
+
+   Fix Attempted:
+   - Modified packages/admin/src/pages/analytics.tsx.
+   - Added data-testid="kpi-scans", "kpi-active-masons", "kpi-redemption-rate", "kpi-pending-payouts" to the corresponding <p> elements.
+
+   Result: PASSED
+   - Test Suites: 1 passed, 1 total
+   - Tests: 4 passed, 4 total
+
+2. DEALER PACKAGE
+   Test File: packages/dealer/src/__tests__/index.test.tsx
+
+   Error Found:
+   - Test suite failed to run with error: "TypeError: Cannot read properties of undefined (reading 'use')" at Object.interceptors (utils/api.ts:13:5).
+   - This was caused by the simple jest.mock('axios') returning undefined for axios.create(), causing the api instance in utils/api.ts to be undefined/malformed.
+
+   Fix Attempted:
+   - Modified packages/dealer/__tests__/index.test.tsx.
+   - Replaced jest.mock('axios') with a comprehensive mock factory that returns a mock object for axios.create(), including the required interceptors object.
+
+   Result: PASSED
+   - Test Suites: 1 passed, 1 total
+   - Tests: 1 passed, 1 total
+
+SUMMARY
+=======
+Both test suites are now PASSING.
+- Admin Analytics tests: OK
+- Dealer Index tests: OK

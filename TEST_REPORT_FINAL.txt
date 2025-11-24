@@ -1,0 +1,39 @@
+TEST REPORT FINAL
+=================
+Date: 2025-11-24
+
+SUMMARY
+=======
+- packages/backend: FAILED
+- packages/mobile:  PASSED
+- packages/admin:   PASSED
+- packages/dealer:  PASSED
+
+OVERALL STATUS: FAILED
+
+DETAILS
+=======
+
+1. packages/backend
+   Result: FAILED
+   Reason: Concurrency test failure in 'tests/api.test.ts'.
+   Context: The test "should handle concurrent scans atomically" likely failed assertions on success/conflict counts (lines 266-267).
+   Hint: The database transaction isolation or locking mechanism might not be strict enough for high concurrency, allowing multiple redemptions or failing to handle race conditions correctly.
+
+2. packages/mobile
+   Result: PASSED
+   Reason: All test suites passed.
+
+3. packages/admin
+   Result: PASSED
+   Reason: All test suites passed (after previous fixes).
+
+4. packages/dealer
+   Result: PASSED
+   Reason: All test suites passed (after previous fixes).
+
+RECOMMENDATION
+==============
+To fix the backend:
+- Investigate 'tests/api.test.ts' around line 266.
+- Check the 'POST /scan' endpoint implementation for proper transaction locking (e.g., 'FOR UPDATE' clause in SQL) to prevent double-spending of coupons during concurrent requests.

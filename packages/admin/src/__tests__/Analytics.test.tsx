@@ -2,9 +2,6 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-// Mock recharts before component import
-jest.mock('recharts');
-
 import AnalyticsPage from '../pages/analytics';
 import api from '../lib/api';
 

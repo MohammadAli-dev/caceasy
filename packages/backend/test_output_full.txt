@@ -1,0 +1,237 @@
+﻿
+> @caceasy/backend@0.1.0 test
+> jest tests/api.test.ts --runInBand --testNamePattern=concurrent
+
+  console.log
+    Database schema initialized successfully
+
+      at Object.<anonymous> (tests/api.test.ts:41:21)
+
+  console.error
+    Coupon generation failed: { error: 'Unauthorized', message: 'Invalid token' }
+
+    [0m [90m 242 |[39m
+     [90m 243 |[39m             [36mif[39m ([33m![39mgenRes[33m.[39mbody[33m.[39mcoupons [33m||[39m [33m![39mgenRes[33m.[39mbody[33m.[39mcoupons[[35m0[39m]) {
+    [31m[1m>[22m[39m[90m 244 |[39m                 console[33m.[39merror([32m'Coupon generation failed:'[39m[33m,[39m genRes[33m.[39mbody)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 245 |[39m                 [36mthrow[39m [36mnew[39m [33mError[39m([32m'Failed to generate coupon for concurrency test'[39m)[33m;[39m
+     [90m 246 |[39m             }
+     [90m 247 |[39m             concurrentToken [33m=[39m genRes[33m.[39mbody[33m.[39mcoupons[[35m0[39m][33m.[39mtoken[33m;[39m[0m
+
+      at Object.<anonymous> (tests/api.test.ts:244:25)
+
+node.exe : FAIL 
+tests/api.test.ts
+At line:1 char:1
++ & "C:\Program File
+s\nodejs/node.exe" 
+"C:\Program Files\no
+dejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
+    + CategoryInfo  
+            : NotS  
+  pecified: (FAIL   
+  tests/api.test    
+.ts:String) [],     
+RemoteExceptio    n
+    + FullyQualifie 
+   dErrorId : Nati  
+  veCommandError
+ 
+  Module 1 - 
+OpenAPI + Auth + 
+Wallet Tests
+    OpenAPI 
+Specification
+      Ôùï skipped 
+should parse 
+openapi.yaml 
+successfully
+    GET /health
+      Ôùï skipped 
+should return 200 OK
+    GET /version
+      Ôùï skipped 
+should return 
+version info
+    Auth Flow
+      Ôùï skipped 
+should request OTP
+      Ôùï skipped 
+should verify OTP 
+and return JWT
+      Ôùï skipped 
+should reject 
+invalid OTP
+    JWT Enforcement
+      Ôùï skipped 
+should reject 
+unauthenticated 
+requests to 
+protected endpoints
+      Ôùï skipped 
+should accept 
+authenticated 
+requests
+    Coupon 
+Generation
+      Ôùï skipped 
+should generate 
+coupons with auth
+      Ôùï skipped 
+should return CSV 
+when Accept: 
+text/csv
+    GET 
+/coupons/{token}
+      Ôùï skipped 
+should get coupon 
+details
+      Ôùï skipped 
+should return 404 
+for non-existent 
+token
+    Scan - 
+Concurrency Test
+      ├ù should 
+handle concurrent 
+scans atomically (1 
+success, 9 
+conflicts) (1 ms)
+    Wallet
+      Ôùï skipped 
+should successfully 
+redeem a new token 
+and update wallet
+      Ôùï skipped 
+should get wallet 
+balance
+      Ôùï skipped 
+should reject 
+access to another 
+user's wallet
+      Ôùï skipped 
+should create 
+payout request
+    Admin Endpoints
+      Ôùï skipped 
+should reject 
+requests without 
+admin key
+      Ôùï skipped 
+should return 
+payouts with valid 
+admin key
+      Ôùï skipped 
+should return 
+flagged activities
+
+  ÔùÅ Module 1 - 
+OpenAPI + Auth + 
+Wallet Tests ÔÇ║ 
+Scan - Concurrency 
+Test ÔÇ║ should 
+handle concurrent 
+scans atomically (1 
+success, 9 
+conflicts)
+
+    Failed to 
+generate coupon for 
+concurrency test
+
+    [0m [90m 243 
+|[39m             
+[36mif[39m ([33m!
+[39mgenRes[33m.[3
+9mbody[33m.[39mcou
+pons [33m||[39m [
+33m![39mgenRes[33m
+.[39mbody[33m.[39
+mcoupons[[35m0[39m
+]) {
+     [90m 244 
+|[39m              
+   console[33m.[39
+merror([32m'Coupon 
+generation failed:'
+[39m[33m,[39m genR
+es[33m.[39mbody)[
+33m;[39m
+    [31m[1m>[22m
+[39m[90m 245 
+|[39m              
+   [36mthrow[39m 
+[36mnew[39m [33mE
+rror[39m([32m'Fail
+ed to generate 
+coupon for 
+concurrency test'[3
+9m)[33m;[39m
+     [90m     
+|[39m              
+         
+[31m[1m^[22m[39m
+     [90m 246 
+|[39m             }
+     [90m 247 
+|[39m             
+concurrentToken 
+[33m=[39m genRes[
+33m.[39mbody[33m.
+[39mcoupons[[35m0[
+39m][33m.[39mtoken
+[33m;[39m
+     [90m 248 
+|[39m         
+})[33m;[39m[0m
+
+      at 
+Object.<anonymous> (
+tests/api.test.ts:24
+5:23)
+
+Test Suites: 1 
+failed, 1 total
+Tests:       1 
+failed, 19 skipped, 
+20 total
+Snapshots:   0 total
+Time:        3.078 s
+Ran all test suites 
+matching /tests\\api
+.test.ts/i with 
+tests matching 
+"concurrent".
+Force exiting Jest: 
+Have you considered 
+using `--detectOpenH
+andles` to detect 
+async operations 
+that kept running 
+after all tests 
+finished?
+npm error Lifecycle 
+script `test` 
+failed with error:
+npm error code 1
+npm error path C:\ca
+ceasy\packages\backe
+nd
+npm error workspace 
+@caceasy/backend@0.1
+.0
+npm error location C
+:\caceasy\packages\b
+ackend
+npm error command 
+failed
+npm error command C:
+\WINDOWS\system32\cm
+d.exe /d /s /c jest 
+tests/api.test.ts 
+--runInBand --testNa
+mePattern=concurrent

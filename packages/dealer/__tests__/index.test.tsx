@@ -13,7 +13,16 @@ jest.mock('next/router', () => ({
 }));
 
 // Mock axios
-jest.mock('axios');
+jest.mock('axios', () => ({
+    create: jest.fn(() => ({
+        interceptors: {
+            request: { use: jest.fn() },
+            response: { use: jest.fn() },
+        },
+        get: jest.fn(() => Promise.resolve({ data: {} })),
+        post: jest.fn(() => Promise.resolve({ data: {} })),
+    })),
+}));
 
 describe('Dealer Frontend', () => {
     it('renders login page', () => {

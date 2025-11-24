@@ -196,3 +196,34 @@ VALUES
   (CURRENT_DATE - INTERVAL '1 day', 148, 60, 120, 0.811, '[{"region":"North","count":43},{"region":"South","count":36},{"region":"East","count":40},{"region":"West","count":29}]'::jsonb, NOW() - INTERVAL '1 day'),
   (CURRENT_DATE, 165, 68, 135, 0.818, '[{"region":"North","count":48},{"region":"South","count":40},{"region":"East","count":45},{"region":"West","count":32}]'::jsonb, NOW())
 ON CONFLICT (date) DO NOTHING;
+
+-- ========================================
+-- TEST FIXTURE DATA FOR BACKEND TESTS
+-- ========================================
+
+-- Insert test users for authentication and transaction tests
+INSERT INTO users (id, phone, name, created_at) VALUES 
+  ('00000000-0000-0000-0000-000000000001', '+15551234567', 'Test User 1', NOW()),
+  ('00000000-0000-0000-0000-000000000002', '+15559876543', 'Test User 2', NOW()),
+  ('00000000-0000-0000-0000-000000000003', '+15555555555', 'Test User 3', NOW())
+ON CONFLICT (phone) DO NOTHING;
+
+-- Insert test batches for coupon generation tests
+INSERT INTO batches (id, name, sku, points_per_coupon, quantity, created_at) VALUES
+  ('10000000-0000-0000-0000-000000000001', 'Test Batch 1', 'TEST-SKU-001', 100, 100, NOW()),
+  ('10000000-0000-0000-0000-000000000002', 'Test Batch 2', 'TEST-SKU-002', 200, 50, NOW())
+ON CONFLICT (id) DO NOTHING;
+
+-- Insert test coupons for scan/redemption tests
+INSERT INTO coupons (token, batch_id, status, points, created_at) VALUES
+  ('TEST-COUPON-001', '10000000-0000-0000-0000-000000000001', 'issued', 100, NOW()),
+  ('TEST-COUPON-002', '10000000-0000-0000-0000-000000000001', 'issued', 100, NOW()),
+  ('TEST-COUPON-003', '10000000-0000-0000-0000-000000000002', 'issued', 200, NOW())
+ON CONFLICT (token) DO NOTHING;
+
+-- Insert some test payouts for payout tests
+INSERT INTO payouts (id, user_id, amount, status, type, created_at) VALUES
+  ('20000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 500, 'pending', 'user', NOW()),
+  ('20000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000002', 1000, 'pending', 'user', NOW())
+ON CONFLICT (id) DO NOTHING;
+

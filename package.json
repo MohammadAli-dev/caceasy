@@ -10,6 +10,10 @@
     "dev": "npm run dev --workspaces"
   },
   "devDependencies": {
+    "@types/recharts": "^1.8.29",
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "recharts": "^3.5.0"
   }
 }

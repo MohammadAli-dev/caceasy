@@ -9,6 +9,7 @@ const customJestConfig = {
     testEnvironment: 'jest-environment-jsdom',
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/$1',
+        '^lucide-react$': '<rootDir>/__mocks__/lucide-react.js',
     },
     transformIgnorePatterns: [
         '/node_modules/(?!lucide-react|axios)/'
