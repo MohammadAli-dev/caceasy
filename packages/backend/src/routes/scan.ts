@@ -24,9 +24,10 @@ router.post('/',
         const client = await getClient();
 
         try {
-            await client.query('BEGIN');
+            await client.query('BEGIN ISOLATION LEVEL SERIALIZABLE');
 
             // 1. Lock the coupon row to prevent race conditions
+            // Using FOR UPDATE to lock the row until transaction commit/rollback
             const couponRes = await client.query(
                 'SELECT * FROM coupons WHERE token = $1 FOR UPDATE',
                 [token]
@@ -80,9 +81,20 @@ router.post('/',
                 newWalletPoints
             });
 
-        } catch (error) {
+        } catch (error: any) {
             await client.query('ROLLBACK');
             console.error('Scan error:', error);
+
+            // Handle PostgreSQL concurrency errors as conflicts
+            // 40001 = serialization_failure (SERIALIZABLE isolation conflict)
+            // 23505 = unique_violation (duplicate key)
+            if (error.code === '40001' || error.code === '23505') {
+                return res.status(409).json({
+                    success: false,
+                    error: 'Token already redeemed or concurrency conflict'
+                });
+            }
+
             res.status(500).json({ error: 'Internal server error' });
         } finally {
             client.release();
